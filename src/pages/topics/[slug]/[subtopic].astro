@@ -1,0 +1,154 @@
+---
+// src/pages/topics/[slug]/[subtopic].astro
+// Auto-generates one page per subtopic e.g. /topics/ccna/ip-addressing
+// The content comes from src/data/topics.js
+
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Navbar from '../../../components/Navbar.astro';
+import Sidebar from '../../../components/Sidebar.astro';
+import { topics } from '../../../data/topics.js';
+
+export function getStaticPaths() {
+  // Build one path entry for every subtopic of every topic
+  const paths = [];
+  for (const topic of topics) {
+    for (const sub of topic.subtopics) {
+      paths.push({
+        params: { slug: topic.slug, subtopic: sub.slug },
+        props: { topic, sub }
+      });
+    }
+  }
+  return paths;
+}
+
+const { topic, sub } = Astro.props;
+
+// Find prev/next subtopic for navigation
+const currentIndex = topic.subtopics.findIndex(s => s.slug === sub.slug);
+const prev = topic.subtopics[currentIndex - 1] ?? null;
+const next = topic.subtopics[currentIndex + 1] ?? null;
+---
+
+<BaseLayout title={`${sub.title} — ${topic.title} | LearnHub`} description={sub.description}>
+  <Navbar />
+
+  <!-- Breadcrumb -->
+  <div class="breadcrumb">
+    <div class="breadcrumb__inner">
+      <a href="/">Home</a>
+      <span>/</span>
+      <a href={`/topics/${topic.slug}`}>{topic.icon} {topic.title}</a>
+      <span>/</span>
+      <span>{sub.title}</span>
+    </div>
+  </div>
+
+  <!-- Page body: sidebar + content -->
+  <div class="page-wrapper">
+    <div class="page-inner">
+
+      <!-- Sidebar: all subtopics listed, current one highlighted -->
+      <Sidebar topic={topic} currentSlug={sub.slug} />
+
+      <!-- Main content -->
+      <article class="content">
+        <div class="content__header" style={`border-left: 4px solid ${topic.color};`}>
+          <p class="content__topic-label" style={`color: ${topic.color};`}>
+            {topic.icon} {topic.title}
+          </p>
+          <h1 class="content__title">{sub.title}</h1>
+          <p class="content__desc">{sub.description}</p>
+        </div>
+
+        <!-- Rendered markdown content -->
+        <div class="prose" set:html={
+          sub.content
+            .trim()
+            .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+            .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+            .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+            .replace(/`([^`]+)`/g, '<code>$1</code>')
+            .replace(/```[\w]*\n([\s\S]*?)```/g, '<pre><code>$1</code></pre>')
+            .replace(/^\| (.+) \|$/gm, (m) => m)
+            .replace(/\n\n/g, '</p><p>')
+            .replace(/^- (.+)$/gm, '<li>$1</li>')
+        } />
+
+        <!-- Prev / Next navigation -->
+        <div class="page-nav">
+          {prev ? (
+            <a href={`/topics/${topic.slug}/${prev.slug}`} class="page-nav__btn page-nav__btn--prev">
+              <span class="page-nav__dir">← Previous</span>
+              <span class="page-nav__label">{prev.title}</span>
+            </a>
+          ) : <div />}
+
+          {next ? (
+            <a href={`/topics/${topic.slug}/${next.slug}`} class="page-nav__btn page-nav__btn--next">
+              <span class="page-nav__dir">Next →</span>
+              <span class="page-nav__label">{next.title}</span>
+            </a>
+          ) : <div />}
+        </div>
+      </article>
+
+    </div>
+  </div>
+
+  <footer style="background: var(--primary); color: rgba(255,255,255,0.6); text-align: center; padding: 2rem; margin-top: 4rem; font-size: 0.875rem;">
+    <p>© {new Date().getFullYear()} LearnHub</p>
+  </footer>
+</BaseLayout>
+
+<style>
+  .breadcrumb {
+    background: var(--surface); border-bottom: 1px solid var(--border);
+  }
+  .breadcrumb__inner {
+    max-width: var(--max); margin: 0 auto; padding: 0.75rem 1.5rem;
+    display: flex; align-items: center; gap: 0.5rem;
+    font-size: 0.8rem; color: var(--muted);
+  }
+  .breadcrumb__inner a { transition: color 0.2s; }
+  .breadcrumb__inner a:hover { color: var(--accent); }
+  .breadcrumb__inner span:not(:last-child) { color: var(--border); }
+
+  .page-wrapper { background: var(--bg); }
+  .page-inner {
+    max-width: var(--max); margin: 0 auto;
+    padding: 2rem 1.5rem;
+    display: flex; gap: 2rem; align-items: flex-start;
+  }
+
+  .content { flex: 1; min-width: 0; }
+  .content__header {
+    padding-left: 1.25rem; margin-bottom: 2rem;
+    padding-bottom: 1.5rem; border-bottom: 1px solid var(--border);
+  }
+  .content__topic-label {
+    font-size: 0.8rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem;
+  }
+  .content__title { font-size: 2rem; font-weight: 600; margin-bottom: 0.5rem; }
+  .content__desc { color: var(--muted); font-size: 0.95rem; }
+
+  .page-nav {
+    display: flex; justify-content: space-between; gap: 1rem;
+    margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border);
+  }
+  .page-nav__btn {
+    display: flex; flex-direction: column; gap: 0.25rem;
+    padding: 1rem 1.25rem; border: 1px solid var(--border);
+    border-radius: var(--radius); max-width: 48%; flex: 1;
+    transition: all 0.2s;
+  }
+  .page-nav__btn--next { text-align: right; }
+  .page-nav__btn:hover { border-color: var(--accent); background: #eff6ff; }
+  .page-nav__dir { font-size: 0.75rem; color: var(--muted); }
+  .page-nav__label { font-size: 0.9rem; font-weight: 500; }
+
+  @media (max-width: 768px) {
+    .page-inner { flex-direction: column; }
+  }
+</style>

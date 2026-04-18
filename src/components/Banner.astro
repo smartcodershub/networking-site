@@ -1,0 +1,61 @@
+---
+// src/components/Banner.astro
+// Same banner, different image/text on every page via props
+const {
+  image,
+  title,
+  subtitle = '',
+  ctaText = '',
+  ctaLink = '#',
+  height = '420px',
+  overlay = 0.6,
+  color = ''
+} = Astro.props;
+
+const bgStyle = image
+  ? `background-image: url('${image}'); background-size: cover; background-position: center;`
+  : `background: linear-gradient(135deg, ${color || '#1e293b'} 0%, ${color || '#3b4f6b'} 100%);`;
+---
+
+<section class="banner" style={`${bgStyle} height: ${height};`}>
+  <div class="banner__overlay" style={`opacity: ${overlay};`}></div>
+  <div class="banner__content">
+    <h1 class="banner__title">{title}</h1>
+    {subtitle && <p class="banner__sub">{subtitle}</p>}
+    {ctaText && <a href={ctaLink} class="banner__cta">{ctaText}</a>}
+  </div>
+</section>
+
+<style>
+  .banner {
+    position: relative; display: flex;
+    align-items: center; justify-content: center; text-align: center;
+  }
+  .banner__overlay {
+    position: absolute; inset: 0; background: #000;
+  }
+  .banner__content {
+    position: relative; z-index: 1; color: #fff;
+    padding: 2rem; max-width: 700px;
+    animation: fadeUp 0.7s ease both;
+  }
+  .banner__title {
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    font-weight: 600; line-height: 1.2; margin-bottom: 0.75rem;
+  }
+  .banner__sub {
+    font-size: clamp(0.95rem, 2vw, 1.15rem);
+    opacity: 0.85; margin-bottom: 1.5rem;
+  }
+  .banner__cta {
+    display: inline-block;
+    background: var(--accent); color: #fff;
+    padding: 0.7rem 1.8rem; border-radius: 6px;
+    font-weight: 500; transition: opacity 0.2s;
+  }
+  .banner__cta:hover { opacity: 0.85; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+</style>
