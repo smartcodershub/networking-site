@@ -1,0 +1,81 @@
+---
+// src/components/Sidebar.astro
+// Shows all subtopics of the current topic with active highlight
+
+const { topic, currentSlug = '' } = Astro.props;
+---
+
+<aside class="sidebar">
+  <div class="sidebar__header" style={`border-left: 4px solid ${topic.color};`}>
+    <span class="sidebar__icon">{topic.icon}</span>
+    <div>
+      <p class="sidebar__label">Topic</p>
+      <p class="sidebar__topic-title">{topic.title}</p>
+    </div>
+  </div>
+
+  <p class="sidebar__section-label">Subtopics</p>
+
+  <ul class="sidebar__list">
+    {topic.subtopics.map((sub, index) => (
+      <li>
+        <a
+          href={`/topics/${topic.slug}/${sub.slug}`}
+          class={`sidebar__link ${currentSlug === sub.slug ? 'active' : ''}`}
+        >
+          <span class="sidebar__num">{String(index + 1).padStart(2, '0')}</span>
+          <span class="sidebar__link-text">{sub.title}</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+
+  <div class="sidebar__footer">
+    <a href={`/topics/${topic.slug}`} class="sidebar__back">← Back to {topic.title}</a>
+  </div>
+</aside>
+
+<style>
+  .sidebar {
+    width: 260px; flex-shrink: 0;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 1.25rem;
+    height: fit-content; position: sticky; top: 80px;
+  }
+  .sidebar__header {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding-left: 0.75rem; margin-bottom: 1.25rem;
+  }
+  .sidebar__icon { font-size: 1.5rem; }
+  .sidebar__label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .sidebar__topic-title { font-weight: 600; font-size: 0.95rem; }
+  .sidebar__section-label {
+    font-size: 0.7rem; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.5px;
+    margin-bottom: 0.5rem;
+  }
+  .sidebar__list { list-style: none; display: flex; flex-direction: column; gap: 2px; }
+  .sidebar__link {
+    display: flex; align-items: flex-start; gap: 0.6rem;
+    padding: 0.55rem 0.75rem; border-radius: 6px;
+    font-size: 0.875rem; color: var(--muted);
+    transition: all 0.15s;
+  }
+  .sidebar__link:hover { background: #f1f5f9; color: var(--primary); }
+  .sidebar__link.active {
+    background: #eff6ff; color: var(--accent);
+    font-weight: 500;
+  }
+  .sidebar__num {
+    font-family: var(--mono); font-size: 0.75rem;
+    color: var(--border); flex-shrink: 0; margin-top: 1px;
+  }
+  .sidebar__link.active .sidebar__num { color: var(--accent); opacity: 0.5; }
+  .sidebar__footer { margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+  .sidebar__back { font-size: 0.8rem; color: var(--muted); transition: color 0.2s; }
+  .sidebar__back:hover { color: var(--accent); }
+
+  @media (max-width: 768px) {
+    .sidebar { width: 100%; position: static; }
+  }
+</style>
