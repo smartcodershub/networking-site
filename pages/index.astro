@@ -1,71 +1,12 @@
 ---
-// src/pages/index.astro — HOME PAGE
-import BaseLayout from '../layouts/BaseLayout.astro';
-import Navbar from '../components/Navbar.astro';
-import Banner from '../components/Banner.astro';
-import { topics } from '../data/topics.js';
+import Layout from '../layouts/BaseLayout.astro';
+import { topics } from '../data/topics';
 ---
-
-<BaseLayout title="LearnHub — Topics & Subtopics">
-  <Navbar />
-
-  <Banner
-    image="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1600"
-    title="Learn Anything, Step by Step"
-    subtitle="Pick a topic below — each one has linked subtopics with full notes"
-    ctaText="Browse Topics"
-    ctaLink="#topics"
-  />
-
-  <main id="topics" style="max-width: var(--max); margin: 4rem auto; padding: 0 1.5rem;">
-    <h2 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem;">All Topics</h2>
-    <p style="color: var(--muted); margin-bottom: 2rem;">Click any topic to see its subtopics</p>
-
-    <div class="topic-grid">
-      {topics.map(topic => (
-        <a href={`/topics/${topic.slug}`} class="topic-card">
-          <div class="topic-card__accent" style={`background: ${topic.color};`}></div>
-          <div class="topic-card__body">
-            <span class="topic-card__icon">{topic.icon}</span>
-            <h3 class="topic-card__title">{topic.title}</h3>
-            <p class="topic-card__desc">{topic.description}</p>
-            <div class="topic-card__meta">
-              <span class="topic-card__count">{topic.subtopics.length} subtopics</span>
-              <span class="topic-card__arrow">Explore →</span>
-            </div>
-          </div>
-        </a>
-      ))}
-    </div>
-  </main>
-
-  <footer style="background: var(--primary); color: rgba(255,255,255,0.6); text-align: center; padding: 2rem; margin-top: 4rem; font-size: 0.875rem;">
-    <p>© {new Date().getFullYear()} LearnHub. Built with Astro. Hosted free on Netlify.</p>
-  </footer>
-</BaseLayout>
-
-<style>
-  .topic-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.25rem;
-  }
-  .topic-card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius); overflow: hidden;
-    transition: transform 0.2s, box-shadow 0.2s;
-    display: flex; flex-direction: column;
-  }
-  .topic-card:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-md);
-  }
-  .topic-card__accent { height: 5px; }
-  .topic-card__body { padding: 1.5rem; flex: 1; display: flex; flex-direction: column; }
-  .topic-card__icon { font-size: 2rem; margin-bottom: 0.75rem; display: block; }
-  .topic-card__title { font-size: 1.15rem; font-weight: 600; margin-bottom: 0.5rem; }
-  .topic-card__desc { color: var(--muted); font-size: 0.875rem; line-height: 1.6; flex: 1; margin-bottom: 1rem; }
-  .topic-card__meta { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
-  .topic-card__count { font-size: 0.8rem; color: var(--muted); background: #f1f5f9; padding: 3px 10px; border-radius: 20px; }
-  .topic-card__arrow { font-size: 0.875rem; color: var(--accent); font-weight: 500; }
-</style>
+<Layout>
+<h1 class="container">Courses</h1>
+<div class="container fade">
+{topics.map(t => (
+  <a href={`/topics/${t.slug}`} class="card">{t.title}</a>
+))}
+</div>
+</Layout>
