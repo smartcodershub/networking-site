@@ -1,9 +1,17 @@
 ---
-import '../styles/global.css';
+// src/layouts/BaseLayout.astro
+const { title = 'My Learning Site', description = '' } = Astro.props;
 ---
-<html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content={description} />
+  <title>{title}</title>
+  <link rel="stylesheet" href="/src/styles/global.css" />
+</head>
 <body>
-<slot />
-<script src="/script.js"></script>
+  <slot />
 </body>
 </html>

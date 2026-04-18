@@ -1,5 +1,76 @@
+---
+// src/components/Navbar.astro
+import { topics } from '../data/topics.js';
+const current = Astro.url.pathname;
+---
 
-<div class="container" style="display:flex;justify-content:space-between">
-<h2>EliteTechLearn</h2>
-<button onclick="toggleDark()">🌙</button>
-</div>
+<nav class="navbar">
+  <div class="navbar__inner">
+    <a href="/" class="navbar__logo">
+      <span class="navbar__logo-icon">📚</span>
+      LearnHub
+    </a>
+    <ul class="navbar__links">
+      <li><a href="/" class={current === '/' ? 'active' : ''}>Home</a></li>
+      {topics.map(t => (
+        <li>
+          <a
+            href={`/topics/${t.slug}`}
+            class={current.startsWith(`/topics/${t.slug}`) ? 'active' : ''}
+          >
+            {t.icon} {t.title}
+          </a>
+        </li>
+      ))}
+    </ul>
+    <button id="mobile-toggle" class="navbar__toggle" aria-label="Menu">☰</button>
+  </div>
+</nav>
+
+<script>
+  document.getElementById('mobile-toggle')?.addEventListener('click', () => {
+    document.querySelector('.navbar__links')?.classList.toggle('open');
+  });
+</script>
+
+<style>
+  .navbar {
+    background: var(--primary);
+    color: #fff;
+    position: sticky; top: 0; z-index: 100;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .navbar__inner {
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    height: 60px;
+    display: flex; align-items: center; gap: 2rem;
+  }
+  .navbar__logo {
+    font-weight: 600; font-size: 1.1rem; color: #fff;
+    display: flex; align-items: center; gap: 0.5rem;
+    white-space: nowrap;
+  }
+  .navbar__links {
+    list-style: none; display: flex; gap: 0.25rem; flex-wrap: wrap;
+  }
+  .navbar__links a {
+    color: rgba(255,255,255,0.7); font-size: 0.9rem; padding: 0.35rem 0.75rem;
+    border-radius: 6px; transition: all 0.2s; white-space: nowrap;
+  }
+  .navbar__links a:hover, .navbar__links a.active {
+    color: #fff; background: rgba(255,255,255,0.12);
+  }
+  .navbar__toggle { display: none; background: none; border: none; color: #fff; font-size: 1.4rem; cursor: pointer; margin-left: auto; }
+
+  @media (max-width: 768px) {
+    .navbar__toggle { display: block; }
+    .navbar__links {
+      display: none; flex-direction: column;
+      position: absolute; top: 60px; left: 0; right: 0;
+      background: var(--primary); padding: 1rem 1.5rem; gap: 0.25rem;
+    }
+    .navbar__links.open { display: flex; }
+  }
+</style>
